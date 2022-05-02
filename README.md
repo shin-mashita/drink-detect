@@ -1,4 +1,5 @@
 # Object Detection on Drinks Dataset using RetinaNet with Resnet50 Backbone
+<img src="/images/preview.png"/>
 This is a project made by Cedric Encarnacion for compliance in EE197Z at UP-EEEI. RetinaNet with Resnet 50 backbone is trained to be able to perform object detection to the drinks dataset. 
 
 ## Requirements
@@ -64,7 +65,6 @@ To perform inference, run
 ```
 python3 infer.py --img <img-path> --model <model-path> --testpath <test-path>
 ```
-
 where `--img` the image to be used as input. By default, inference will be performed randomly on the test dataset.
 
 ## Demo
