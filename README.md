@@ -1,5 +1,5 @@
 # Object Detection on Drinks Dataset using RetinaNet with Resnet50 Backbone
-<img src="/images/preview.png"/>
+<p align="center"><img src="/images/preview.png" style="height: 400px"/></p>
 This is a project made by Cedric Encarnacion for compliance in EE197Z at UP-EEEI. RetinaNet with Resnet 50 backbone is trained to be able to perform object detection to the drinks dataset. 
 
 ## Requirements
