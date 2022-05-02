@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader
 from PIL import Image
 from torchvision import transforms as T
 from engine import evaluate
-from drinks_utils import DrinksDataset, csv2labels, fetch_drinks_dataset
+from drinks_utils import DrinksDataset, csv2labels, fetch_drinks_dataset, fetch_pth
 
 # Helper Functions
 def get_args():
@@ -22,6 +22,7 @@ def get_args():
 def main(args):
     # Fetch dataset and pretrained weights
     fetch_drinks_dataset()
+    fetch_pth()
 
     config = {
         "model":args.model,

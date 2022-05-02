@@ -6,7 +6,7 @@ import numpy as np
 
 from PIL import Image
 from torchvision import transforms as T
-from drinks_utils import csv2labels, view_prediction
+from drinks_utils import csv2labels, view_prediction, fetch_drinks_dataset, fetch_pth
 
 def get_args():
     parser = argparse.ArgumentParser(description="Drinks object detection")
@@ -16,7 +16,9 @@ def get_args():
     return parser
 
 def main(args):
-    # TODO: Need to fetch default pth if not existing
+    # Fetch dataset and pretrained model
+    fetch_drinks_dataset()
+    fetch_pth()
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     config = {
@@ -25,11 +27,6 @@ def main(args):
         "testpath":args.testpath
     }
 
-    label_maps ={
-    "1": "Summit Drinking Water 500ml",
-    "2": "Coca-Cola 330ml",
-    "3": "Del Monte 100% Pineapple Juice 240ml"
-    }
 
     if not os.path.exists(config["img"]) or config["img"] == "":
         labels,_ = csv2labels(os.path.join(config["testpath"],"labels_test.csv"))

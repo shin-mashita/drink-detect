@@ -4,7 +4,7 @@ import cv2
 import argparse
 
 def get_args():
-    parser = argparse.ArgumentParser(description="Drinks object detection")
+    parser = argparse.ArgumentParser(description="Camera")
     parser.add_argument("--index", default=2, type=int, metavar="N")    
     return parser
 
@@ -19,10 +19,8 @@ def main(args):
     out = cv2.VideoWriter(vidpath,fourcc, 10.0, (640,480))
     
     while(True):
-        print("Recording... ")
         ret, frame = cap.read()
         out.write(frame)
-        print(ret)
         if ret:
             cv2.imshow("demo",frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):

@@ -11,7 +11,7 @@ from drinks_utils import DrinksDataset, csv2labels, fetch_drinks_dataset
 
 def get_args():
     parser = argparse.ArgumentParser(description="Drinks object detection")
-    parser.add_argument("--epochs", default=3, type=int, metavar="N")
+    parser.add_argument("--epochs", default=1, type=int, metavar="N")
     parser.add_argument("--batch-size", default=4, type=int, metavar="N")
     parser.add_argument("--datapath", default="./drinks", type=str)
     parser.add_argument("--output-path", default="./checkpoints", type=str)
