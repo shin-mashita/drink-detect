@@ -29,7 +29,7 @@ def get_args():
                         help='number of epochs to train (default: 0)')
     parser.add_argument('--lr', type=float, default=0.001, metavar='LR',
                         help='learning rate (default: 0.0)')
-    parser.add_argument('--data-path', default="./data/", type=str, metavar='N')
+    parser.add_argument('--data-path', default="./data/speech_commands/", type=str, metavar='N')
     parser.add_argument('--accelerator', default='gpu', type=str, metavar='N')
     parser.add_argument('--num-workers', default=8, type=int, metavar='N')
     parser.add_argument("--debug", action="store_true")
@@ -57,7 +57,7 @@ if __name__ == "__main__":
     args = get_args()
 
     if not os.path.exists(args.data_path):
-        os.mkdir(args.data_path)
+        os.makedirs(args.data_path)
 
     CLASSES = ['silence', 'unknown', 'backward', 'bed', 'bird', 'cat', 'dog', 'down', 'eight', 'five', 'follow',
             'forward', 'four', 'go', 'happy', 'house', 'learn', 'left', 'marvin', 'nine', 'no',
