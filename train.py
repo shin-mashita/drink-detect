@@ -1,92 +1,92 @@
-import os
-import torch
-import torchvision
-import utils
-import argparse
-
-from torch.utils.data import DataLoader
-from torchvision import transforms as T
-from engine import train_one_epoch, evaluate
-from drinks_utils import DrinksDataset, csv2labels, fetch_drinks_dataset
+from argparse import ArgumentParser
+from pytorch_lightning import Trainer
+from kws_transformer import LitTransformer
+from datamodule import KWSDataModule
 
 def get_args():
-    parser = argparse.ArgumentParser(description="Drinks object detection")
-    parser.add_argument("--epochs", default=1, type=int, metavar="N")
-    parser.add_argument("--batch-size", default=4, type=int, metavar="N")
-    parser.add_argument("--datapath", default="./drinks", type=str)
-    parser.add_argument("--output-path", default="./checkpoints", type=str)
-    parser.add_argument("--dont-save-checkpoint", action="store_true")
-    return parser
+    parser = ArgumentParser(description='KWS Transformer')
 
-def main(args):
-    # Fetch dataset
-    fetch_drinks_dataset()
+    # Transformer params
+    parser.add_argument('--depth', type=int, default=12, help='depth')
+    parser.add_argument('--embed-dim', type=int, default=64, help='embedding dimension')
+    parser.add_argument('--num-heads', type=int, default=4, help='num_heads')
+    parser.add_argument('--patch-num', type=int, default=8, help='patch_num')
+    parser.add_argument("--num-classes", type=int, default=37)
 
-    # Config
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    config = {
-        "epochs":args.epochs,
-        "batch_size":args.batch_size,
-        "datapath":args.datapath,
-        "output_path":args.output_path,
-        "dont_save_checkpoint":args.dont_save_checkpoint
-    }
+    # Mel spectrogram params
+    parser.add_argument("--n-fft", type=int, default=1024)
+    parser.add_argument("--n-mels", type=int, default=128)
+    parser.add_argument("--win-length", type=int, default=None)
+    parser.add_argument("--hop-length", type=int, default=512)
 
-    # Generate label dict from csv
-    train_csv_path = os.path.join(config["datapath"],"labels_train.csv")
-    test_csv_path = os.path.join(config["datapath"],"labels_test.csv")
-    
-    train_dict, train_classes = csv2labels(train_csv_path)
-    test_dict, test_classes = csv2labels(test_csv_path)
+    # Training params
+    parser.add_argument('--batch-size', type=int, default=64, metavar='N',
+                        help='input batch size for training (default: )')
+    parser.add_argument('--max-epochs', type=int, default=30, metavar='N',
+                        help='number of epochs to train (default: 0)')
+    parser.add_argument('--lr', type=float, default=0.001, metavar='LR',
+                        help='learning rate (default: 0.0)')
+    parser.add_argument('--data-path', default="./data/speech_commands/", type=str, metavar='N')
+    parser.add_argument('--accelerator', default='gpu', type=str, metavar='N')
+    parser.add_argument('--num-workers', default=4, type=int, metavar='N')
+    parser.add_argument("--debug", action="store_true")
 
-    # Initialize Data Loader for training/ testing
-    transform = T.Compose([T.ToTensor()])
-    train_split = DrinksDataset(train_dict, transform)
-    test_split = DrinksDataset(test_dict, transform)
+    args = parser.parse_args()
+    return args
 
-    train_loader = DataLoader(  train_split,
-                                batch_size=config["batch_size"],
-                                shuffle=True,
-                                num_workers=2,
-                                pin_memory=True,
-                                collate_fn=utils.collate_fn)
-
-    test_loader = DataLoader(   test_split,
-                                batch_size=1,
-                                shuffle=False,
-                                num_workers=2,
-                                pin_memory=True,
-                                collate_fn=utils.collate_fn)
-    
-    # Initialize model
-    model = torchvision.models.detection.retinanet_resnet50_fpn(pretrained=True)
-    model.to(device)
-
-    # Initialize optimizer and lr scheduler
-    params = [p for p in model.parameters() if p.requires_grad]
-    optimizer = torch.optim.SGD(params, lr=0.001, momentum=0.9, weight_decay=0.0005)
-    lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=3, gamma=0.1)
-
-    # Training loop 
-    epochs = config["epochs"]
-
-    for epoch in range(epochs):
-        train_one_epoch(model, optimizer, train_loader, device, epoch, print_freq=25)
-        lr_scheduler.step()
-    
-    evaluate(model, test_loader, device=device)
-    
-    # Save model 
-    if not os.path.exists(config["output_path"]):
-        os.mkdir(config["output_path"])
-
-    if not config["dont_save_checkpoint"]:
-        fpath = 'retinanet_resnet50_fpn_drinks_epochs_' + str(args.epochs) + '.pth'
-        fpath = os.path.join(config["output_path"],fpath)
-        torch.save(model.state_dict(),fpath)
-    
+def debug(show=True,model=None):
+    if args.debug == True:
+        print()
+        print("----- Model params -----")
+        print("Embed dim: ", args.embed_dim)
+        print("Patch nums: ", args.patch_num)
+        print("Depth: ", args.depth)
+        print("Heads: ", args.num_heads)
+        print("Seq len: ", seqlen)
+        print()
+        print("----- Testing params -----")
+        print("Device: ", args.accelerator)
+        print("Epochs: ", args.max_epochs)
+        print("Batch size: ", args.batch_size)
+        print()
 
 if __name__ == "__main__":
-    args = get_args().parse_args()
-    main(args)
+    args = get_args()
+
+    CLASSES = ['silence', 'unknown', 'backward', 'bed', 'bird', 'cat', 'dog', 'down', 'eight', 'five', 'follow',
+            'forward', 'four', 'go', 'happy', 'house', 'learn', 'left', 'marvin', 'nine', 'no',
+            'off', 'on', 'one', 'right', 'seven', 'sheila', 'six', 'stop', 'three',
+            'tree', 'two', 'up', 'visual', 'wow', 'yes', 'zero']
+
+    CLASS_TO_IDX = {c: i for i, c in enumerate(CLASSES)}
+
+    datamodule = KWSDataModule( path=args.data_path,
+                                batch_size=args.batch_size,
+                                num_workers=args.num_workers,
+                                n_mels=args.n_mels,
+                                n_fft=args.n_fft,
+                                win_length=args.win_length,
+                                hop_length=args.hop_length,
+                                patch_num=args.patch_num,
+                                class_dict=CLASS_TO_IDX)
+    datamodule.setup()
+
+    data = iter(datamodule.train_dataloader()).next()
+    patch_dim = data[0].shape[-1]
+    seqlen = data[0].shape[-2]
+
+    model = LitTransformer( num_classes=len(CLASSES), 
+                            lr=args.lr,
+                            epochs=args.max_epochs, 
+                            depth=args.depth,
+                            embed_dim=args.embed_dim,
+                            head=args.num_heads,
+                            patch_dim=patch_dim,
+                            seqlen=seqlen)
+
+    trainer = Trainer(  accelerator=args.accelerator, max_epochs=args.max_epochs, 
+                        precision=16 if args.accelerator == 'gpu' else 32)
     
+    debug(args.debug)
+    trainer.fit(model, datamodule=datamodule)
+    trainer.test(model, datamodule=datamodule)
