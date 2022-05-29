@@ -8,9 +8,9 @@ def get_args():
 
     # Transformer params
     parser.add_argument('--depth', type=int, default=12, help='depth')
-    parser.add_argument('--embed-dim', type=int, default=64, help='embedding dimension')
+    parser.add_argument('--embed-dim', type=int, default=32, help='embedding dimension')
     parser.add_argument('--num-heads', type=int, default=4, help='num_heads')
-    parser.add_argument('--patch-num', type=int, default=8, help='patch_num')
+    parser.add_argument('--patch-num', type=int, default=16, help='patch_num')
     parser.add_argument("--num-classes", type=int, default=37)
 
     # Mel spectrogram params
@@ -20,7 +20,7 @@ def get_args():
     parser.add_argument("--hop-length", type=int, default=512)
 
     # Training params
-    parser.add_argument('--batch-size', type=int, default=64, metavar='N',
+    parser.add_argument('--batch-size', type=int, default=128, metavar='N',
                         help='input batch size for training (default: )')
     parser.add_argument('--max-epochs', type=int, default=30, metavar='N',
                         help='number of epochs to train (default: 0)')
@@ -28,7 +28,7 @@ def get_args():
                         help='learning rate (default: 0.0)')
     parser.add_argument('--data-path', default="./data/speech_commands/", type=str, metavar='N')
     parser.add_argument('--accelerator', default='gpu', type=str, metavar='N')
-    parser.add_argument('--num-workers', default=4, type=int, metavar='N')
+    parser.add_argument('--num-workers', default=8, type=int, metavar='N')
     parser.add_argument("--debug", action="store_true")
 
     args = parser.parse_args()
