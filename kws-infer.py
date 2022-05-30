@@ -20,9 +20,9 @@ def get_args():
     parser.add_argument("--hop-length", type=int, default=512)
     parser.add_argument("--wav-file", type=str, default=None)
     parser.add_argument("--checkpoint", type=str, default="https://github.com/shin-mashita/drink-detect/releases/download/v1.0.1/kws_transformer_91_1129.pt")
-    parser.add_argument("--gui", default=False, action="store_true")
+    parser.add_argument("--gui", default=True, action="store_true")
     parser.add_argument("--rpi", default=False, action="store_true")
-    parser.add_argument("--threshold", type=float, default=0.75)
+    parser.add_argument("--threshold", type=float, default=0.65)
     args = parser.parse_args()
     return args
 
