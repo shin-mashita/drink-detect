@@ -59,11 +59,19 @@ if __name__ == "__main__":
   
     elif args.wav_file is None:
         # list wav files given a folder
-        print("Searching for random kws wav file...") # TODO: Limit to test dataset
+        print("Searching for random kws wav file...")
         label = CLASSES[2:]
         label = np.random.choice(label)
+        
+        if not os.path.exists(args.path):
+            os.makedirs(args.path)
+            test_dataset = torchaudio.datasets.SPEECHCOMMANDS(  args.path,
+                                                                download=True,
+                                                                subset='testing')
+        
         path = os.path.join(args.path, "SpeechCommands/speech_commands_v0.02/")
         path = os.path.join(path, label)
+        
         wav_files = [os.path.join(path, f)
                      for f in os.listdir(path) if f.endswith('.wav')]
         # select random wav file
