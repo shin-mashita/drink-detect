@@ -54,7 +54,7 @@ To perform inference, run
 ```
 python3 kws-infer.py
 ```
-By default, a keyword-spotting GUI will pop up and the user is required to input ketwords through a microphone. 
+By default, a keyword-spotting GUI will pop up and the user is required to input keywords through a microphone. 
 
 
 ## Links
