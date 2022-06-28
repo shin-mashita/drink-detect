@@ -2,5 +2,5 @@
 These are projects/assignments made by Cedric Encarnacion for compliance in EE197Z at UP-EEEI. 
 
 ## Contents
-1. Object Detection on Drinks Dataset using RetinaNet with Resnet50 Backbone
-2. Transformer-based Keyword Spotting System
+1. <a href="https://github.com/shin-mashita/drink-detect/tree/main/drinks_detection">Object Detection on Drinks Dataset using RetinaNet with Resnet50 Backbone</a>
+2. <a href="https://github.com/shin-mashita/drink-detect/tree/main/transformer_based_kws">Transformer-based Keyword Spotting System</a>
